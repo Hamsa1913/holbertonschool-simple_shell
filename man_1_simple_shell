@@ -1,10 +1,49 @@
-.TH HSH 1 "Simple Shell" "Holberton School"
+.TH SIMPLE_SHELL 1 "September 2025" "Holberton School" "Simple Shell Manual"
 .SH NAME
-hsh \- simple UNIX command interpreter
+simple_shell \- a simple UNIX command line interpreter
+
 .SH SYNOPSIS
 .B hsh
+
 .SH DESCRIPTION
-A simple shell that executes commands from standard input.
+.B simple_shell
+is a basic UNIX command line interpreter that reads commands from
+standard input and executes them.
+
+The shell displays a prompt, waits for the user to enter a command,
+and executes the command using the execve system call.
+
+The command line consists of a single word with no arguments.
+
+.SH FEATURES
+- Displays a prompt and waits for user input
+- Executes commands using execve
+- Handles end of file condition (Ctrl+D)
+- Prints error messages when commands are not found
+- Works in interactive and non-interactive mode
+
+.SH LIMITATIONS
+This shell does not support:
+- Command arguments
+- PATH resolution
+- Built-in commands
+- Pipes, redirections, or special characters
+
+.SH EXAMPLES
+Interactive mode:
+.nf
+$ ./hsh
+($) /bin/ls
+file1 file2
+($)
+.fi
+
+Non-interactive mode:
+.nf
+$ echo "/bin/ls" | ./hsh
+file1 file2
+.fi
+
 .SH AUTHOR
 Hamsa Alammar
 Mariam Almaleki
