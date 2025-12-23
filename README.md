@@ -2,10 +2,9 @@
 
 A simple UNIX command line interpreter written in C.
 
-## Description
-This project is a basic implementation of a UNIX shell that executes commands
-entered by the user.
+## Compilation
+gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
 
-## Authors
-Hamsa Alammar 
+## Usage
+`Hamsa Alammar 
 Mariam Almaleki
