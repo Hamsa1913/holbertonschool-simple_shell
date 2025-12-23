@@ -1,15 +1,11 @@
 # Simple Shell
 
+A simple UNIX command line interpreter written in C.
+
 ## Description
-This project is a simple UNIX command line interpreter written in C.
-
-## Usage
-Compile with:
-gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
-
-Run with:
-./hsh
+This project is a basic implementation of a UNIX shell that executes commands
+entered by the user.
 
 ## Authors
-Hamsa 
-Mariam
+Hamsa Alammar 
+Mariam Almaleki
