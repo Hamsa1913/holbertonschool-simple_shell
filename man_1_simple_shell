@@ -1,0 +1,10 @@
+.TH hsh 1
+.SH NAME
+hsh \- simple UNIX shell
+.SH SYNOPSIS
+./hsh
+.SH DESCRIPTION
+A simple UNIX command line interpreter.
+.SH AUTHORS
+Hamsa Alammar
+Mariam
