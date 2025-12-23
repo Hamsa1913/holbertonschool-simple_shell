@@ -1,10 +1,10 @@
-.TH hsh 1
+.TH HSH 1 "Simple Shell" "Holberton School"
 .SH NAME
-hsh \- simple UNIX shell
+hsh \- simple UNIX command interpreter
 .SH SYNOPSIS
-./hsh
+.B hsh
 .SH DESCRIPTION
-A simple UNIX command line interpreter.
-.SH AUTHORS
+A simple shell that executes commands from standard input.
+.SH AUTHOR
 Hamsa Alammar
-Mariam
+Mariam Almaleki
