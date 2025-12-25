@@ -1,9 +1,9 @@
 #include "simple_shell.h"
 
 /**
- * main - Entry point of simple shell
+ * main - Entry point
  *
- * Return: Always 0
+ * Return: 0 on success
  */
 int main(void)
 {
