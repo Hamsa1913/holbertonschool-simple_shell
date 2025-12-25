@@ -1,7 +1,7 @@
 #include "simple_shell.h"
 
 /**
- * main - Entry point
+ * main - Entry point for simple shell
  * @ac: argument count
  * @av: argument vector
  *
@@ -10,5 +10,8 @@
 int main(int ac, char **av)
 {
 	(void)ac;
-	return (hsh_loop(av[0]));
+	(void)av;
+
+	hsh_loop();
+	return (0);
 }
