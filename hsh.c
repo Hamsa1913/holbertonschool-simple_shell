@@ -7,13 +7,14 @@
  */
 int hsh_loop(void)
 {
-	char *line;
 	size_t len;
 	ssize_t r;
 	pid_t pid;
 	int status;
 	char *argv[2];
 	char *cmd_path;
+	char *line = NULL;
+	char *cmd;
 
 	line = NULL;
 	len = 0;
@@ -28,37 +29,48 @@ int hsh_loop(void)
 		{
 			free(line);
 			return (0);
-		}
+			}
 
-		if (line[r - 1] == '\n')
+		if (r > 0 && line[r - 1] == '\n')
 			line[r - 1] = '\0';
 
-		line = trim_spaces(line);
-		if (*line == '\0')
+		/* trim spaces w\ losing original pointer */
+		cmd = trim_spaces(line);
+
+		if (*cmd == '\0')
 			continue;
 
-		cmd_path = find_path(line);
-		if (cmd_path == NULL)
+		argv[0] = cmd;
+		argv[1] = NULL;
+
+		path = find_path(cmd);
+		if (!path)
 		{
 			write(STDERR_FILENO, "./hsh: 1: ", 10);
-			write(STDERR_FILENO, line, _strlen(line));
+			write(STDERR_FILENO, cmd, _strlen(cmd));
 			write(STDERR_FILENO, ": not found\n", 12);
 			continue;
 		}
 
-		argv[0] = cmd_path;   /* the problem was in this line */
-		argv[1] = NULL;
-
 		pid = fork();
+		if (pid == -1)
+		{
+			perror("fork");
+			free(path);
+			free(line);
+			return (0);
+		}
+
 		if (pid == 0)
 		{
-			execve(cmd_path, argv, environ);
+			execve(path, argv, environ);
+			perror("./hsh");
 			exit(1);
 		}
 		else
+		{
 			wait(&status);
-
-		free(cmd_path);
+			free(path);
+		}
 	}
 }
-
