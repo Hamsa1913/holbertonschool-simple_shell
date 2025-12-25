@@ -1,7 +1,8 @@
 #include "simple_shell.h"
 
 /**
- * hsh_loop - shell loop
+ * hsh_loop - main shell loop
+ * Return: 0 on exit
  */
 int hsh_loop(void)
 {
@@ -29,12 +30,11 @@ int hsh_loop(void)
 
 		cmd = trim_spaces(line);
 
+		/* skip empty lines */
 		if (*cmd == '\0')
 			continue;
 
-		_memcpy(line, cmd, _strlen(cmd) + 1);
-
-		argv = split_line(line);
+		argv = split_line(cmd);
 		if (!argv)
 			continue;
 
