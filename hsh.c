@@ -62,4 +62,3 @@ int hsh_loop(void)
 		}
 	}
 }
-
