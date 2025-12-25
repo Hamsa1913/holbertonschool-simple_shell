@@ -1,27 +1,46 @@
-#ifndef SIMPLE_SHELL_H
-#define SIMPLE_SHELL_H
+#include "simple_shell.h"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-#include <string.h>
+/**
+ * find_path - find command in PATH
+ */
+char *find_path(char *cmd)
+{
+	char *path = NULL, *path_copy, *token, *full;
+	int i;
 
-extern char **environ;
+	if (cmd[0] == '/' || (cmd[0] == '.' && cmd[1] == '/'))
+		return (_strdup(cmd));
 
-/* shell */
-int hsh_loop(void);
+	for (i = 0; environ[i]; i++)
+	{
+		if (_strncmp(environ[i], "PATH=", 5) == 0)
+			path = environ[i] + 5;
+	}
 
-/* utils */
-char *trim_spaces(char *str);
-char **split_line(char *line);
-int _strlen(char *s);
-int _strncmp(char *s1, char *s2, int n);
-char *_strdup(char *s);
-void _memcpy(char *dest, char *src, int n);
+	if (!path)
+		return (NULL);
 
-/* path */
-char *find_path(char *cmd);
+	path_copy = _strdup(path);
+	token = strtok(path_copy, ":");
 
-#endif
+	while (token)
+	{
+		full = malloc(_strlen(token) + _strlen(cmd) + 2);
+		if (!full)
+			return (NULL);
 
+		sprintf(full, "%s/%s", token, cmd);
+
+		if (access(full, X_OK) == 0)
+		{
+			free(path_copy);
+			return (full);
+		}
+
+		free(full);
+		token = strtok(NULL, ":");
+	}
+
+	free(path_copy);
+	return (NULL);
+}
