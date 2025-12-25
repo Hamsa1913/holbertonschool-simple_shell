@@ -1,64 +1,72 @@
 #include "simple_shell.h"
 
 /**
- * hsh_loop - main shell loop
- * Return: 0 on exit
+ * hsh_loop - Main shell loop
+ * Return: 0 on success
  */
 int hsh_loop(void)
 {
-	char *line = NULL, *cmd, *path;
-	size_t len = 0;
-	ssize_t r;
-	pid_t pid;
-	int status;
-	char **argv;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t r;
+    pid_t pid;
+    int status;
+    char **argv;
+    char *cmd_path;
 
-	while (1)
-	{
-		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "#cisfun$ ", 9);
+    while (1)
+    {
+        if (isatty(STDIN_FILENO))
+            write(STDOUT_FILENO, "#cisfun$ ", 9);
 
-		r = getline(&line, &len, stdin);
-		if (r == -1)
-		{
-			free(line);
-			return (0);
-		}
+        r = getline(&line, &len, stdin);
+        if (r == -1)
+        {
+            free(line);
+            return (0);
+        }
 
-		if (line[r - 1] == '\n')
-			line[r - 1] = '\0';
+        if (r > 0 && line[r - 1] == '\n')
+            line[r - 1] = '\0';
 
-		cmd = trim_spaces(line);
+        line = trim_spaces(line);
+        if (*line == '\0')
+            continue;
 
-		/* skip empty lines */
-		if (*cmd == '\0')
-			continue;
+        argv = split_line(line);
+        if (!argv || !argv[0])
+        {
+            free(argv);
+            continue;
+        }
 
-		argv = split_line(cmd);
-		if (!argv)
-			continue;
+        cmd_path = find_path(argv[0]);
 
-		path = find_path(argv[0]);
-		if (!path)
-		{
-			write(STDERR_FILENO, "./hsh: 1: ", 10);
-			write(STDERR_FILENO, argv[0], _strlen(argv[0]));
-			write(STDERR_FILENO, ": not found\n", 12);
-			free(argv);
-			continue;
-		}
+        pid = fork();
+        if (pid == -1)
+        {
+            perror("fork");
+            free(argv);
+            free(line);
+            return (0);
+        }
 
-		pid = fork();
-		if (pid == 0)
-		{
-			execve(path, argv, environ);
-			exit(1);
-		}
-		else
-		{
-			wait(&status);
-			free(path);
-			free(argv);
-		}
-	}
+        if (pid == 0)
+        {
+            if (execve(cmd_path ? cmd_path : argv[0], argv, environ) == -1)
+            {
+                perror("./hsh");
+                exit(EXIT_FAILURE);
+            }
+        }
+        else
+            wait(&status);
+
+        free(argv);
+        if (cmd_path)
+            free(cmd_path);
+    }
+
+    free(line);
+    return (0);
 }
