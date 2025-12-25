@@ -15,6 +15,7 @@ int hsh_loop(void)
         pid_t pid;
         int status;
         char *argv[2];
+        char *cmd_path;
 
         while (1)
         {
@@ -34,8 +35,8 @@ int hsh_loop(void)
                 if (*line == '\0')
                         continue;
 
-                /* this is for PATH handling */
-                char *cmd_path = find_path(line);
+                /* PATH handling */
+                cmd_path = find_path(line);
                 if (!cmd_path)
                 {
                         fprintf(stderr, "./hsh: 1: %s: not found\n", line);
