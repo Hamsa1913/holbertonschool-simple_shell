@@ -14,6 +14,7 @@ void hsh_loop(void)
 	ssize_t read;
 	pid_t pid;
 	int status;
+	char *argv[2];
 
 	while (1)
 	{
@@ -31,16 +32,21 @@ void hsh_loop(void)
 
 		line[read - 1] = '\0';
 
+		argv[0] = line;
+		argv[1] = NULL;
+
 		pid = fork();
 		if (pid == 0)
 		{
-			if (execve(line, NULL, environ) == -1)
+			if (execve(argv[0], argv, environ) == -1)
 			{
 				perror("./hsh");
 				exit(1);
 			}
 		}
 		else if (pid > 0)
+		{
 			wait(&status);
+		}
 	}
 }
