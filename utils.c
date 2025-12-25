@@ -5,13 +5,15 @@
  */
 char *trim_spaces(char *str)
 {
+	char *end;
+
 	while (*str == ' ' || *str == '\t')
 		str++;
 
 	if (*str == '\0')
 		return (str);
 
-	char *end = str + _strlen(str) - 1;
+	end = str + _strlen(str) - 1;
 	while (end > str && (*end == ' ' || *end == '\t'))
 		end--;
 
@@ -19,6 +21,9 @@ char *trim_spaces(char *str)
 	return (str);
 }
 
+/**
+ * split_line - splits command into argv
+ */
 char **split_line(char *line)
 {
 	char **argv;
@@ -42,7 +47,11 @@ char **split_line(char *line)
 int _strlen(char *s)
 {
 	int i = 0;
-	while (s && s[i])
+
+	if (!s)
+		return (0);
+
+	while (s[i])
 		i++;
 	return (i);
 }
@@ -50,6 +59,7 @@ int _strlen(char *s)
 int _strncmp(char *s1, char *s2, int n)
 {
 	int i;
+
 	for (i = 0; i < n; i++)
 	{
 		if (s1[i] != s2[i])
@@ -63,8 +73,9 @@ int _strncmp(char *s1, char *s2, int n)
 char *_strdup(char *s)
 {
 	char *dup;
-	int len = _strlen(s), i;
+	int i, len;
 
+	len = _strlen(s);
 	dup = malloc(len + 1);
 	if (!dup)
 		return (NULL);
@@ -78,6 +89,8 @@ char *_strdup(char *s)
 void _memcpy(char *dest, char *src, int n)
 {
 	int i;
+
 	for (i = 0; i < n; i++)
 		dest[i] = src[i];
 }
+
