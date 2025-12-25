@@ -33,6 +33,7 @@ int hsh_loop(void)
 		if (line[r - 1] == '\n')
 			line[r - 1] = '\0';
 
+		line = trim_spaces(line);
 		if (*line == '\0')
 			continue;
 
