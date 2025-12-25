@@ -22,5 +22,6 @@ char *build_path(char *dir, char *cmd);
 int _strlen(char *s);
 char *_strdup(char *str);
 int _strncmp(char *s1, char *s2, size_t n);
+char *trim_spaces(char *str);
 
 #endif
