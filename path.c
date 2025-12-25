@@ -2,14 +2,14 @@
 
 /**
  * find_path - locate command in PATH
- * @cmd: command name
+ * @cmd: command
  *
  * Return: full path or NULL
  */
 char *find_path(char *cmd)
 {
 	int i;
-	char *path;
+	char *path = NULL;
 	char *path_copy;
 	char *token;
 	char *full;
@@ -20,8 +20,14 @@ char *find_path(char *cmd)
 	for (i = 0; environ[i]; i++)
 	{
 		if (_strncmp(environ[i], "PATH=", 5) == 0)
+		{
 			path = environ[i] + 5;
+			break;
+		}
 	}
+
+	if (!path)
+		return (NULL);
 
 	path_copy = _strdup(path);
 	token = strtok(path_copy, ":");
