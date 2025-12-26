@@ -1,96 +1,72 @@
 #include "simple_shell.h"
 
 /**
- * trim_spaces - removes leading and trailing spaces
+ * _strlen - get string length
  */
-char *trim_spaces(char *str)
+size_t _strlen(const char *s)
 {
-	char *end;
-
-	while (*str == ' ' || *str == '\t')
-		str++;
-
-	if (*str == '\0')
-		return (str);
-
-	end = str + _strlen(str) - 1;
-	while (end > str && (*end == ' ' || *end == '\t'))
-		end--;
-
-	end[1] = '\0';
-	return (str);
+    size_t i = 0;
+    while (s[i])
+        i++;
+    return i;
 }
 
 /**
- * split_line - splits command into argv
+ * _strdup - duplicate string
  */
-char **split_line(char *line)
+char *_strdup(const char *s)
 {
-	char **argv;
-	int i = 0;
-	char *token;
+    size_t len = _strlen(s) + 1;
+    char *dup = malloc(len);
+    size_t i;
 
-	argv = malloc(sizeof(char *) * 64);
-	if (!argv)
-		return (NULL);
+    if (!dup)
+        return NULL;
 
-	token = strtok(line, " ");
-	while (token)
-	{
-		argv[i++] = token;
-		token = strtok(NULL, " ");
-	}
-	argv[i] = NULL;
-	return (argv);
+    for (i = 0; i < len; i++)
+        dup[i] = s[i];
+    return dup;
 }
 
-int _strlen(char *s)
+/**
+ * _strncmp - compare n characters
+ */
+int _strncmp(const char *s1, const char *s2, size_t n)
 {
-	int i = 0;
-
-	if (!s)
-		return (0);
-
-	while (s[i])
-		i++;
-	return (i);
+    size_t i;
+    for (i = 0; i < n && s1[i] && s2[i]; i++)
+    {
+        if (s1[i] != s2[i])
+            return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+    }
+    if (i < n)
+        return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+    return 0;
 }
 
-int _strncmp(char *s1, char *s2, int n)
+/**
+ * trim_spaces - trim leading and trailing spaces
+ */
+char *trim_spaces(char *str)
 {
-	int i;
-
-	for (i = 0; i < n; i++)
-	{
-		if (s1[i] != s2[i])
-			return (s1[i] - s2[i]);
-		if (s1[i] == '\0')
-			return (0);
-	}
-	return (0);
+    char *end;
+    while (*str && (*str == ' ' || *str == '\t'))
+        str++;
+    end = str + _strlen(str) - 1;
+    while (end > str && (*end == ' ' || *end == '\t'))
+        *end-- = '\0';
+    return str;
 }
 
-char *_strdup(char *s)
+/**
+ * _memcpy - copy memory
+ */
+void _memcpy(void *dest, void *src, size_t n)
 {
-	char *dup;
-	int i, len;
+    size_t i;
+    char *d = dest;
+    char *s = src;
 
-	len = _strlen(s);
-	dup = malloc(len + 1);
-	if (!dup)
-		return (NULL);
-
-	for (i = 0; i <= len; i++)
-		dup[i] = s[i];
-
-	return (dup);
+    for (i = 0; i < n; i++)
+        d[i] = s[i];
 }
-
-void _memcpy(char *dest, char *src, int n)
-{
-	int i;
-
-	for (i = 0; i < n; i++)
-		dest[i] = src[i];
-}
-
