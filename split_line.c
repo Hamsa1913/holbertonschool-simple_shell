@@ -1,34 +1,30 @@
 #include "simple_shell.h"
 
 /**
- * split_line - splits a line into arguments
- * @line: the command line
- * Return: NULL-terminated argv array
+ * split_line - split line into arguments
  */
 char **split_line(char *line)
 {
-	char **argv;
-	int bufsize = 64, i = 0;
-	char *token;
+    int bufsize = 64, pos = 0;
+    char **tokens = malloc(bufsize * sizeof(char *));
+    char *token;
 
-	argv = malloc(sizeof(char *) * bufsize);
-	if (!argv)
-		return (NULL);
+    if (!tokens)
+        return NULL;
 
-	token = strtok(line, " \t");
-	while (token)
-	{
-		argv[i++] = token;
-		if (i >= bufsize)
-		{
-			bufsize += 64;
-			argv = realloc(argv, sizeof(char *) * bufsize);
-			if (!argv)
-				return (NULL);
-		}
-		token = strtok(NULL, " \t");
-	}
-	argv[i] = NULL;
-	return (argv);
+    token = strtok(line, " \t\r\n\a");
+    while (token != NULL)
+    {
+        tokens[pos++] = token;
+        if (pos >= bufsize)
+        {
+            bufsize += 64;
+            tokens = realloc(tokens, bufsize * sizeof(char *));
+            if (!tokens)
+                return NULL;
+        }
+        token = strtok(NULL, " \t\r\n\a");
+    }
+    tokens[pos] = NULL;
+    return tokens;
 }
-
