@@ -1,8 +1,11 @@
 #include "simple_shell.h"
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
 
 /**
- * _strlen - returns the length of a string
+ * _strlen - Returns the length of a string
  */
 size_t _strlen(const char *s)
 {
@@ -14,7 +17,7 @@ size_t _strlen(const char *s)
 }
 
 /**
- * _strdup - duplicates a string
+ * _strdup - Duplicates a string (allocates)
  */
 char *_strdup(const char *s)
 {
@@ -25,7 +28,7 @@ char *_strdup(const char *s)
         return (NULL);
 
     len = _strlen(s);
-    dup = malloc(len + 1);
+    dup = malloc(sizeof(char) * (len + 1));
     if (!dup)
         return (NULL);
 
@@ -37,21 +40,20 @@ char *_strdup(const char *s)
 }
 
 /**
- * _memcpy - copies n bytes from src to dest
+ * _memcpy - Copies memory area
  */
-void *_memcpy(void *dest, const void *src, size_t n)
+void _memcpy(void *dest, const void *src, size_t n)
 {
     size_t i;
     char *d = (char *)dest;
-    const char *s = (const char *)src;
+    char *s = (char *)src;
 
     for (i = 0; i < n; i++)
         d[i] = s[i];
-    return (dest);
 }
 
 /**
- * trim_spaces - removes leading and trailing spaces from a string
+ * trim_spaces - Remove leading and trailing spaces/tabs
  */
 char *trim_spaces(char *str)
 {
@@ -61,10 +63,10 @@ char *trim_spaces(char *str)
         return (NULL);
 
     /* Trim leading spaces */
-    while (*str == ' ' || *str == '\t')
+    while (*str && (*str == ' ' || *str == '\t'))
         str++;
 
-    if (*str == '\0') /* string is all spaces */
+    if (*str == 0) /* all spaces */
         return str;
 
     /* Trim trailing spaces */
@@ -74,11 +76,11 @@ char *trim_spaces(char *str)
 
     *(end + 1) = '\0';
 
-    return (str);
+    return str;
 }
 
 /**
- * free_argv - frees a null-terminated array of strings
+ * free_argv - Frees a NULL-terminated array of strings
  */
 void free_argv(char **argv)
 {
@@ -91,3 +93,4 @@ void free_argv(char **argv)
         free(argv[i]);
     free(argv);
 }
+
