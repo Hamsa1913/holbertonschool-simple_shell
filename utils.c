@@ -5,7 +5,7 @@
  */
 size_t _strlen(const char *s)
 {
-	size_t i;
+	size_t i = 0;
 
 	if (!s)
 		return (0);
@@ -20,7 +20,7 @@ size_t _strlen(const char *s)
 /**
  * _strdup - Duplicates a string
  */
-char *_strdup(char *s)
+char *_strdup(const char *s)
 {
 	char *dup;
 	size_t i, len;
@@ -42,42 +42,42 @@ char *_strdup(char *s)
 /**
  * _strncmp - Compare n characters of two strings
  */
-int _strncmp(const char *s1, const char *s2, size_t n)
+int _strncmp( char *s1, char *s2, size_t n)
 {
     size_t i;
 
-    for (i = 0; i < n && s1[i] && s2[i]; i++)
-    {
-        if (s1[i] != s2[i])
-            return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-    }
-    if (i < n)
-        return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-    return (0);
+    	for (i = 0; i < n; i++)
+	{
+		if (s1[i] != s2[i] || s1[i] == '\0' || s2[i] == '\0')
+			return (s1[i] - s2[i]);
+	}
+	return (0);
 }
 
 /**
  * _memcpy - Copies n bytes from src to dest
  */
-void _memcpy(char *dest, char *src, int n)
+void *_memcpy(void *dest, const void *src, size_t n)
 {
-	int i;
+	size_t i;
+	char *d = dest;
+	const char *s = src;
 
 	for (i = 0; i < n; i++)
-		dest[i] = src[i];
+		d[i] = s[i];
+
+	return (dest);
 }
 
 /**
  * _trim_spaces - Trim leading and trailing spaces from a string
  */
-char *trim_spaces(char *str)
 {
-	int start, end, i;
+	int start = 0, end, i = 0;
 
 	if (!str)
-		return (NULL);
+		return;
 
-	start = 0;
 	while (str[start] == ' ' || str[start] == '\t')
 		start++;
 
@@ -85,14 +85,10 @@ char *trim_spaces(char *str)
 	while (end > start && (str[end] == ' ' || str[end] == '\t'))
 		end--;
 
-	i = 0;
 	while (start <= end)
-	{
 		str[i++] = str[start++];
-	}
-	str[i] = '\0';
 
-	return (str);
+	str[i] = '\0';
 }
 
 /**
@@ -102,7 +98,7 @@ char **split_line(char *line)
 {
 	char **argv;
 	char *token;
-	int i;
+	int i = 0;
 
 	if (!line)
 		return (NULL);
@@ -112,14 +108,12 @@ char **split_line(char *line)
 		return (NULL);
 
 	token = strtok(line, " \t");
-	i = 0;
-
 	while (token)
 	{
 		argv[i++] = _strdup(token);
 		token = strtok(NULL, " \t");
 	}
-
 	argv[i] = NULL;
+
 	return (argv);
 }
