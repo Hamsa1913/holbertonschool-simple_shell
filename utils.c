@@ -1,7 +1,7 @@
 #include "simple_shell.h"
 
 /**
- * _strlen - Returns the length of a string
+ * _strlen - returns length of a string
  */
 size_t _strlen(const char *s)
 {
@@ -10,7 +10,6 @@ size_t _strlen(const char *s)
 	if (!s)
 		return (0);
 
-	i = 0;
 	while (s[i])
 		i++;
 
@@ -18,7 +17,7 @@ size_t _strlen(const char *s)
 }
 
 /**
- * _strdup - Duplicates a string
+ * _strdup - duplicates a string
  */
 char *_strdup(const char *s)
 {
@@ -33,29 +32,15 @@ char *_strdup(const char *s)
 	if (!dup)
 		return (NULL);
 
-	for (i = 0; i <= len; i++)
+	for (i = 0; i < len; i++)
 		dup[i] = s[i];
 
+	dup[i] = '\0';
 	return (dup);
 }
 
 /**
- * _strncmp - Compare n characters of two strings
- */
-int _strncmp( char *s1, char *s2, size_t n)
-{
-    size_t i;
-
-    	for (i = 0; i < n; i++)
-	{
-		if (s1[i] != s2[i] || s1[i] == '\0' || s2[i] == '\0')
-			return (s1[i] - s2[i]);
-	}
-	return (0);
-}
-
-/**
- * _memcpy - Copies n bytes from src to dest
+ * _memcpy - copies
  */
 void *_memcpy(void *dest, const void *src, size_t n)
 {
@@ -70,10 +55,11 @@ void *_memcpy(void *dest, const void *src, size_t n)
 }
 
 /**
- * _trim_spaces - Trim leading and trailing spaces from a string
+ * trim_spaces - removes leading/trailing spaces
  */
+void trim_spaces(char *str)
 {
-	int start = 0, end, i = 0;
+	int start = 0, end, i;
 
 	if (!str)
 		return;
@@ -85,14 +71,14 @@ void *_memcpy(void *dest, const void *src, size_t n)
 	while (end > start && (str[end] == ' ' || str[end] == '\t'))
 		end--;
 
-	while (start <= end)
-		str[i++] = str[start++];
+	for (i = 0; start <= end; start++, i++)
+		str[i] = str[start];
 
 	str[i] = '\0';
 }
 
 /**
- * split_line - Splits a line into tokens (arguments)
+ * split_line - splits line into arguments
  */
 char **split_line(char *line)
 {
@@ -117,3 +103,4 @@ char **split_line(char *line)
 
 	return (argv);
 }
+
