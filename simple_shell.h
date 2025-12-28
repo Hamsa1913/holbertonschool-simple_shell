@@ -20,7 +20,7 @@ void trim_spaces(char *str);
 /* utility file functions becuse i cant used more than 5 functions */
 size_t _strlen(const char *s);
 char *_strdup(const char *s);
-int _strncmp(char *s1,  char *s2, size_t n);
+int _strncmp(const char *s1, const char *s2, size_t n);
 void *_memcpy(void *dest, const void *src, size_t n);
 
 /*split line into argument*/
