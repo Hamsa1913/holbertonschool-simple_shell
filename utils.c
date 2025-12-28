@@ -3,9 +3,9 @@
 /**
  * _strlen - Returns the length of a string
  */
-int _strlen(const char *s)
+size_t _strlen(const char *s)
 {
-    int len = 0;
+    size_t len = 0;
 
     while (s[len])
         len++;
