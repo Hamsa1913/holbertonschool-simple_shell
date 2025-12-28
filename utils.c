@@ -69,7 +69,7 @@ void *_memcpy(void *dest, const void *src, size_t n)
 /**
  * _trim_spaces - Trim leading and trailing spaces from a string
  */
-void _trim_spaces(char *str)
+void trim_spaces(char *str)
 {
     char *end;
     int len;
