@@ -1,68 +1,84 @@
 #include "simple_shell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/wait.h>
 
 /**
  * hsh_loop - main shell loop
- * Return: 0 on success
+ * Return: 0 on exit
  */
 int hsh_loop(void)
 {
-    char *line = NULL, **argv;
-    size_t n = 0;
-    ssize_t read;
-    int status = 0;
+    char *line = NULL;
+    char **argv;
+    size_t bufsize = 0;
+    ssize_t nread;
+    int status;
+    pid_t pid;
 
     while (1)
     {
         /* Print prompt */
-        if (isatty(STDIN_FILENO))
-            write(STDOUT_FILENO, ":) ", 3);
+        write(STDOUT_FILENO, ":) ", 3);
 
-        read = getline(&line, &n, stdin);
-        if (read == -1) /* EOF or error */
+        /* Read input */
+        nread = getline(&line, &bufsize, stdin);
+        if (nread == -1)
         {
             free(line);
             break;
         }
 
-        /* Remove leading/trailing spaces and newline */
-        line[read - 1] = '\0'; /* remove newline */
-        line = trim_spaces(line);
+        /* Trim leading/trailing spaces */
+        trim_spaces(line);
 
-        if (line[0] == '\0') /* empty line */
+        if (line[0] == '\0') /* Ignore empty lines */
             continue;
 
+        /* Split line into arguments */
         argv = split_line(line);
         if (!argv)
             continue;
 
-        /* Check if command exists before fork */
-        if (access(argv[0], F_OK) == 0 || find_in_path(argv[0]))
+        /* Check if command exists */
+        if (access(argv[0], F_OK) != 0)
         {
-            pid_t pid = fork();
-            if (pid == -1)
+            char *full_path = find_path(argv[0]);
+            if (full_path)
             {
-                perror("fork");
+                free(argv[0]);
+                argv[0] = full_path;
+            }
+            else
+            {
+                write(STDERR_FILENO, "Command not found\n", 18);
                 free_argv(argv);
                 continue;
             }
-            else if (pid == 0) /* Child process */
-            {
-                execve(argv[0], argv, environ);
-                perror("execve");
-                exit(EXIT_FAILURE);
-            }
-            else /* Parent process */
-                waitpid(pid, &status, 0);
         }
-        else
+
+        /* Fork process */
+        pid = fork();
+        if (pid == -1)
         {
-            write(STDOUT_FILENO, argv[0], _strlen(argv[0]));
-            write(STDOUT_FILENO, ": command not found\n", 20);
+            perror("fork");
+            free_argv(argv);
+            continue;
+        }
+
+        if (pid == 0) /* Child */
+        {
+            execve(argv[0], argv, environ);
+            perror("execve"); /* Only reached on error */
+            free_argv(argv);
+            free(line);
+            exit(EXIT_FAILURE);
+        }
+        else /* Parent */
+        {
+            waitpid(pid, &status, 0);
         }
 
         free_argv(argv);
@@ -73,7 +89,7 @@ int hsh_loop(void)
 }
 
 /**
- * main - entry point for simple shell
+ * main - entry point
  * Return: 0 on success
  */
 int main(void)
