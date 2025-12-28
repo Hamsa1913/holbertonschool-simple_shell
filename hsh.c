@@ -62,5 +62,6 @@ int hsh_loop(void)
 	}
 
 	free(line);
+	return (0);
 }
 
