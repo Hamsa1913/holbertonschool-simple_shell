@@ -76,31 +76,3 @@ void trim_spaces(char *str)
 
 	str[i] = '\0';
 }
-
-/**
- * split_line - splits line into arguments
- */
-char **split_line(char *line)
-{
-	char **argv;
-	char *token;
-	int i = 0;
-
-	if (!line)
-		return (NULL);
-
-	argv = malloc(sizeof(char *) * 64);
-	if (!argv)
-		return (NULL);
-
-	token = strtok(line, " \t");
-	while (token)
-	{
-		argv[i++] = _strdup(token);
-		token = strtok(NULL, " \t");
-	}
-	argv[i] = NULL;
-
-	return (argv);
-}
-
