@@ -3,7 +3,7 @@
 /**
  * hsh_loop - main shell loop
  */
-void hsh_loop(void);
+void hsh_loop(void)
 {
 	char *line;
 	char **argv;
