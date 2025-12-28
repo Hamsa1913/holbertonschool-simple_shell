@@ -1,19 +1,16 @@
 #include "simple_shell.h"
+#include <stdlib.h>
 
 /**
- * _strlen - returns length of a string
+ * _strlen - returns the length of a string
  */
 size_t _strlen(const char *s)
 {
-	size_t i = 0;
+    size_t len = 0;
 
-	if (!s)
-		return (0);
-
-	while (s[i])
-		i++;
-
-	return (i);
+    while (s[len])
+        len++;
+    return (len);
 }
 
 /**
@@ -21,83 +18,76 @@ size_t _strlen(const char *s)
  */
 char *_strdup(const char *s)
 {
-	char *dup;
-	size_t i, len;
+    char *dup;
+    size_t i, len;
 
-	if (!s)
-		return (NULL);
+    if (!s)
+        return (NULL);
 
-	len = _strlen(s);
-	dup = malloc(len + 1);
-	if (!dup)
-		return (NULL);
+    len = _strlen(s);
+    dup = malloc(len + 1);
+    if (!dup)
+        return (NULL);
 
-	for (i = 0; i < len; i++)
-		dup[i] = s[i];
+    for (i = 0; i < len; i++)
+        dup[i] = s[i];
+    dup[len] = '\0';
 
-	dup[i] = '\0';
-	return (dup);
+    return (dup);
 }
 
 /**
- * _memcpy - copies
+ * _memcpy - copies n bytes from src to dest
  */
 void *_memcpy(void *dest, const void *src, size_t n)
 {
-	size_t i;
-	char *d = dest;
-	const char *s = src;
+    size_t i;
+    char *d = (char *)dest;
+    const char *s = (const char *)src;
 
-	for (i = 0; i < n; i++)
-		d[i] = s[i];
-
-	return (dest);
+    for (i = 0; i < n; i++)
+        d[i] = s[i];
+    return (dest);
 }
 
 /**
- * trim_spaces - removes leading/trailing spaces
+ * trim_spaces - removes leading and trailing spaces from a string
  */
-void trim_spaces(char *str)
+char *trim_spaces(char *str)
 {
-	int start = 0, end, i;
+    char *end;
 
-	if (!str)
-		return;
+    if (!str)
+        return (NULL);
 
-	while (str[start] == ' ' || str[start] == '\t')
-		start++;
+    /* Trim leading spaces */
+    while (*str == ' ' || *str == '\t')
+        str++;
 
-	end = _strlen(str) - 1;
-	while (end > start && (str[end] == ' ' || str[end] == '\t'))
-		end--;
+    if (*str == '\0') /* string is all spaces */
+        return str;
 
-	for (i = 0; start <= end; start++, i++)
-		str[i] = str[start];
+    /* Trim trailing spaces */
+    end = str + _strlen(str) - 1;
+    while (end > str && (*end == ' ' || *end == '\t'))
+        end--;
 
-	str[i] = '\0';
+    *(end + 1) = '\0';
+
+    return (str);
 }
+
 /**
- * _strncmp - compare strings up to n bytes
+ * free_argv - frees a null-terminated array of strings
  */
-int _strncmp(const char *s1, const char *s2, size_t n)
-{
-	size_t i;
-
-	for (i = 0; i < n; i++)
-	{
-		if (s1[i] != s2[i] || !s1[i] || !s2[i])
-			return (s1[i] - s2[i]);
-	}
-	return (0);
-}
 void free_argv(char **argv)
 {
     int i;
 
     if (!argv)
         return;
+
     for (i = 0; argv[i]; i++)
         free(argv[i]);
     free(argv);
 }
-
