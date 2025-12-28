@@ -11,7 +11,7 @@ void hsh_loop(void)
     char **argv;
     char *cmd_path;
     pid_t pid;
-    int status;
+    int status; i;
 
     while (1)
     {
@@ -23,7 +23,7 @@ void hsh_loop(void)
             exit(EXIT_SUCCESS);
         }
 
-        _trim_spaces(line);
+        trim_spaces(line);
         if (_strlen(line) == 0)
             continue;
 
@@ -39,7 +39,7 @@ void hsh_loop(void)
         {
             write(STDERR_FILENO, argv[0], _strlen(argv[0]));
             write(STDERR_FILENO, ": not found\n", 12);
-            for (int i = 0; argv[i]; i++)
+            for ( i = 0; argv[i]; i++)
                 free(argv[i]);
             free(argv);
             continue;
@@ -58,10 +58,12 @@ void hsh_loop(void)
             perror("fork");
 
         free(cmd_path);
-        for (int i = 0; argv[i]; i++)
+        for (i = 0; argv[i]; i++)
             free(argv[i]);
         free(argv);
     }
+    free(line);
+    return (0);
 }
 
 /**
@@ -69,7 +71,6 @@ void hsh_loop(void)
  */
 int main(void)
 {
-    hsh_loop();
-    return (0);
+    return (hsh_loop());
 }
 
