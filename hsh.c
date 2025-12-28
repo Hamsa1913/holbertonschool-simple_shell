@@ -1,11 +1,9 @@
 #include "simple_shell.h"
 
 /**
- * hsh_loop - Main shell loop
- *
- * Return: 0 on success
+ * hsh_loop - main shell loop
  */
-int hsh_loop(void)
+void hsh_loop(void)
 {
 	char *line;
 	char **argv;
@@ -25,63 +23,44 @@ int hsh_loop(void)
 
 		read = getline(&line, &len, stdin);
 		if (read == -1)
-		{
-			free(line);
-			return (0);
-		}
+			break;
 
-		/* Remove trailing newline */
-		if (read > 0 && line[read - 1] == '\n')
-			line[read - 1] = '\0';
-
-		/* Trim leading/trailing spaces */
 		trim_spaces(line);
 
-		/* Empty or spaces-only line */
 		if (line[0] == '\0')
 			continue;
 
 		argv = split_line(line);
 		if (!argv || !argv[0])
 		{
-			free(argv);
+			free_argv(argv);
 			continue;
 		}
 
-		/* Find command path */
 		cmd_path = find_path(argv[0]);
 		if (!cmd_path)
 		{
-			write(STDERR_FILENO, "./hsh: 1: ", 10);
 			write(STDERR_FILENO, argv[0], _strlen(argv[0]));
 			write(STDERR_FILENO, ": not found\n", 12);
-
-			free(argv);
+			free_argv(argv);
 			continue;
 		}
 
-		/* Fork only if command exists */
 		pid = fork();
-		if (pid == -1)
-		{
-			perror("fork");
-			free(cmd_path);
-			free(argv);
-			continue;
-		}
-
 		if (pid == 0)
 		{
-			execve(cmd_path, argv, environ);
-			perror("execve");
-			exit(1);
+			if (execve(cmd_path, argv, environ) == -1)
+				exit(EXIT_FAILURE);
 		}
-		else
+		else if (pid > 0)
 		{
 			wait(&status);
 		}
 
 		free(cmd_path);
-		free(argv);
+		free_argv(argv);
 	}
+
+	free(line);
 }
+
