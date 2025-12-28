@@ -1,96 +1,79 @@
 #include "simple_shell.h"
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <unistd.h>
 
-/**
- * _strlen - Returns the length of a string
- */
+/* Return length of string */
 size_t _strlen(const char *s)
 {
-    size_t len = 0;
-
-    while (s[len])
-        len++;
-    return (len);
+	size_t len = 0;
+	while (s[len])
+		len++;
+	return len;
 }
 
-/**
- * _strdup - Duplicates a string (allocates)
- */
+/* Duplicate string */
 char *_strdup(const char *s)
 {
-    char *dup;
-    size_t i, len;
+	size_t len;
+	char *dup;
+	size_t i;
 
-    if (!s)
-        return (NULL);
-
-    len = _strlen(s);
-    dup = malloc(sizeof(char) * (len + 1));
-    if (!dup)
-        return (NULL);
-
-    for (i = 0; i < len; i++)
-        dup[i] = s[i];
-    dup[len] = '\0';
-
-    return (dup);
+	if (!s)
+		return NULL;
+	len = _strlen(s);
+	dup = malloc(len + 1);
+	if (!dup)
+		return NULL;
+	for (i = 0; i < len; i++)
+		dup[i] = s[i];
+	dup[i] = '\0';
+	return dup;
 }
 
-/**
- * _memcpy - Copies memory area
- */
-void _memcpy(void *dest, const void *src, size_t n)
+/* Copy memory */
+void *_memcpy(void *dest, const void *src, size_t n)
 {
-    size_t i;
-    char *d = (char *)dest;
-    char *s = (char *)src;
+	unsigned char *d = dest;
+	const unsigned char *s = src;
+	size_t i;
 
-    for (i = 0; i < n; i++)
-        d[i] = s[i];
+	for (i = 0; i < n; i++)
+		d[i] = s[i];
+	return dest;
 }
 
-/**
- * trim_spaces - Remove leading and trailing spaces/tabs
- */
+/* Trim leading and trailing spaces */
 char *trim_spaces(char *str)
 {
-    char *end;
+	char *end;
 
-    if (!str)
-        return (NULL);
+	if (!str)
+		return NULL;
 
-    /* Trim leading spaces */
-    while (*str && (*str == ' ' || *str == '\t'))
-        str++;
+	while (*str == ' ' || *str == '\t')
+		str++;
 
-    if (*str == 0) /* all spaces */
-        return str;
+	if (*str == '\0')
+		return str;
 
-    /* Trim trailing spaces */
-    end = str + _strlen(str) - 1;
-    while (end > str && (*end == ' ' || *end == '\t'))
-        end--;
+	end = str + _strlen(str) - 1;
+	while (end > str && (*end == ' ' || *end == '\t'))
+		end--;
 
-    *(end + 1) = '\0';
-
-    return str;
+	*(end + 1) = '\0';
+	return str;
 }
 
-/**
- * free_argv - Frees a NULL-terminated array of strings
- */
+/* Free argv array */
 void free_argv(char **argv)
 {
-    int i;
+	size_t i;
 
-    if (!argv)
-        return;
+	if (!argv)
+		return;
 
-    for (i = 0; argv[i]; i++)
-        free(argv[i]);
-    free(argv);
+	for (i = 0; argv[i]; i++)
+		free(argv[i]);
+	free(argv);
 }
 
