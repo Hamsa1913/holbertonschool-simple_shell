@@ -7,6 +7,6 @@
  */
 int main(void)
 {
-	hsh_loop();
-	return (0);
+        hsh_loop();
+        return (0);
 }
