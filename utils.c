@@ -90,3 +90,14 @@ int _strncmp(const char *s1, const char *s2, size_t n)
 	}
 	return (0);
 }
+void free_argv(char **argv)
+{
+    int i;
+
+    if (!argv)
+        return;
+    for (i = 0; argv[i]; i++)
+        free(argv[i]);
+    free(argv);
+}
+
