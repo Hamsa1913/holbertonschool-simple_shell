@@ -5,34 +5,38 @@
  */
 size_t _strlen(const char *s)
 {
-    size_t len = 0;
+	size_t i;
 
-    while (s[len])
-        len++;
-    return (len);
+	if (!s)
+		return (0);
+
+	i = 0;
+	while (s[i])
+		i++;
+
+	return (i);
 }
 
 /**
  * _strdup - Duplicates a string
  */
-char *_strdup(const char *s)
+char *_strdup(char *s)
 {
-    char *dup;
-    int len, i;
+	char *dup;
+	size_t i, len;
 
-    if (!s)
-        return (NULL);
+	if (!s)
+		return (NULL);
 
-    len = _strlen(s);
-    dup = malloc(len + 1);
-    if (!dup)
-        return (NULL);
+	len = _strlen(s);
+	dup = malloc(len + 1);
+	if (!dup)
+		return (NULL);
 
-    for (i = 0; i < len; i++)
-        dup[i] = s[i];
-    dup[len] = '\0';
+	for (i = 0; i <= len; i++)
+		dup[i] = s[i];
 
-    return (dup);
+	return (dup);
 }
 
 /**
@@ -55,40 +59,40 @@ int _strncmp(const char *s1, const char *s2, size_t n)
 /**
  * _memcpy - Copies n bytes from src to dest
  */
-void *_memcpy(void *dest, const void *src, size_t n)
+void _memcpy(char *dest, char *src, int n)
 {
-    size_t i;
-    char *d = dest;
-    const char *s = src;
+	int i;
 
-    for (i = 0; i < n; i++)
-        d[i] = s[i];
-    return (dest);
+	for (i = 0; i < n; i++)
+		dest[i] = src[i];
 }
 
 /**
  * _trim_spaces - Trim leading and trailing spaces from a string
  */
-void trim_spaces(char *str)
+char *trim_spaces(char *str)
 {
-    char *end;
-    int len;
+	int start, end, i;
 
-    while (*str == ' ' || *str == '\t')
-        str++;
+	if (!str)
+		return (NULL);
 
-    len = _strlen(str);
-    if (len == 0)
-    {
-        str[0] = '\0';
-        return;
-    }
+	start = 0;
+	while (str[start] == ' ' || str[start] == '\t')
+		start++;
 
-    end = str + len - 1;
-    while (end > str && (*end == ' ' || *end == '\t'))
-        end--;
+	end = _strlen(str) - 1;
+	while (end > start && (str[end] == ' ' || str[end] == '\t'))
+		end--;
 
-    *(end + 1) = '\0';
+	i = 0;
+	while (start <= end)
+	{
+		str[i++] = str[start++];
+	}
+	str[i] = '\0';
+
+	return (str);
 }
 
 /**
@@ -96,32 +100,26 @@ void trim_spaces(char *str)
  */
 char **split_line(char *line)
 {
-    int bufsize = 64, pos = 0;
-    char **tokens = malloc(bufsize * sizeof(char *));
-    char *token;
+	char **argv;
+	char *token;
+	int i;
 
-    if (!tokens)
-    {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
+	if (!line)
+		return (NULL);
 
-    token = strtok(line, " \t\r\n");
-    while (token != NULL)
-    {
-        tokens[pos++] = _strdup(token);
-        if (pos >= bufsize)
-        {
-            bufsize *= 2;
-            tokens = realloc(tokens, bufsize * sizeof(char *));
-            if (!tokens)
-            {
-                perror("realloc");
-                exit(EXIT_FAILURE);
-            }
-        }
-        token = strtok(NULL, " \t\r\n");
-    }
-    tokens[pos] = NULL;
-    return (tokens);
+	argv = malloc(sizeof(char *) * 64);
+	if (!argv)
+		return (NULL);
+
+	token = strtok(line, " \t");
+	i = 0;
+
+	while (token)
+	{
+		argv[i++] = _strdup(token);
+		token = strtok(NULL, " \t");
+	}
+
+	argv[i] = NULL;
+	return (argv);
 }
