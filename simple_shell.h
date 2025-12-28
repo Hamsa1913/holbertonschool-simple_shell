@@ -2,6 +2,13 @@
 #define SIMPLE_SHELL_H
 
 #include <stddef.h>
+#include <unistd.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/wait.h>
+
+
 
 /* Global variable for environment */
 extern char **environ;
