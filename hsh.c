@@ -2,75 +2,97 @@
 
 /**
  * hsh_loop - Main shell loop
+ *
+ * Return: 0 on success
  */
-void hsh_loop(void)
+int hsh_loop(void)
 {
-    char *line = NULL;
-    size_t bufsize = 0;
-    ssize_t nread;
-    char **argv;
-    char *cmd_path;
-    pid_t pid;
-    int status, i;
+	char *line;
+	char **argv;
+	char *cmd_path;
+	size_t len;
+	ssize_t read;
+	pid_t pid;
+	int status;
 
-    while (1)
-    {
-        write(STDOUT_FILENO, ":) ", 3);
-        nread = getline(&line, &bufsize, stdin);
-        if (nread == -1)
-        {
-            free(line);
-            exit(EXIT_SUCCESS);
-        }
+	line = NULL;
+	len = 0;
 
-        trim_spaces(line);
-        if (_strlen(line) == 0)
-            continue;
+	while (1)
+	{
+		if (isatty(STDIN_FILENO))
+			write(STDOUT_FILENO, "$ ", 2);
 
-        argv = split_line(line);
-        if (!argv[0])
-        {
-            free(argv);
-            continue;
-        }
+		read = getline(&line, &len, stdin);
+		if (read == -1)
+		{
+			free(line);
+			return (0);
+		}
 
-        cmd_path = find_path(argv[0]);
-        if (!cmd_path)
-        {
-            write(STDERR_FILENO, argv[0], _strlen(argv[0]));
-            write(STDERR_FILENO, ": not found\n", 12);
-            for ( i = 0; argv[i]; i++)
-                free(argv[i]);
-            free(argv);
-            continue;
-        }
+		/* Remove trailing newline */
+		if (read > 0 && line[read - 1] == '\n')
+			line[read - 1] = '\0';
 
-        pid = fork();
-        if (pid == 0)
-        {
-            execve(cmd_path, argv, environ);
-            perror("execve");
-            exit(EXIT_FAILURE);
-        }
-        else if (pid > 0)
-            waitpid(pid, &status, 0);
-        else
-            perror("fork");
+		/* Trim leading/trailing spaces */
+		trim_spaces(line);
 
-        free(cmd_path);
-        for (i = 0; argv[i]; i++)
-            free(argv[i]);
-        free(argv);
-    }
-    free(line);
-    return (0);
+		/* Empty or spaces-only line */
+		if (line[0] == '\0')
+			continue;
+
+		argv = split_line(line);
+		if (!argv || !argv[0])
+		{
+			free(argv);
+			continue;
+		}
+
+		/* Find command path */
+		cmd_path = find_path(argv[0]);
+		if (!cmd_path)
+		{
+			write(STDERR_FILENO, "./hsh: 1: ", 10);
+			write(STDERR_FILENO, argv[0], _strlen(argv[0]));
+			write(STDERR_FILENO, ": not found\n", 12);
+
+			free(argv);
+			continue;
+		}
+
+		/* Fork only if command exists */
+		pid = fork();
+		if (pid == -1)
+		{
+			perror("fork");
+			free(cmd_path);
+			free(argv);
+			continue;
+		}
+
+		if (pid == 0)
+		{
+			execve(cmd_path, argv, environ);
+			perror("execve");
+			exit(1);
+		}
+		else
+		{
+			wait(&status);
+		}
+
+		free(cmd_path);
+		free(argv);
+	}
 }
 
 /**
  * main - Entry point
+ *
+ * Return: Always 0
  */
 int main(void)
 {
-    return (hsh_loop());
+	return (hsh_loop());
 }
 
