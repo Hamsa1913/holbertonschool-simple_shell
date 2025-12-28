@@ -85,14 +85,3 @@ int hsh_loop(void)
 		free(argv);
 	}
 }
-
-/**
- * main - Entry point
- *
- * Return: Always 0
- */
-int main(void)
-{
-	return (hsh_loop());
-}
-
