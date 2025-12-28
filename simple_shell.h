@@ -25,4 +25,5 @@ void *_memcpy(void *dest, const void *src, size_t n);
 
 /*split line into argument*/
 char **split_line(char *line);
+void free_argv(char **argv);
 #endif
