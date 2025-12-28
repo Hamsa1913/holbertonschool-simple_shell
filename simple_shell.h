@@ -22,7 +22,7 @@ char *build_path(char *dir, char *cmd);
 size_t _strlen(const char *s);
 char *_strdup(const char *s);
 int _strncmp(const char *s1, const char *s2, size_t n);
-char *trim_spaces(char *str);
+char trim_spaces(char *str);
 void *_memcpy(void *dest, const void *src, size_t n); 
 
 /*split line into argument*/

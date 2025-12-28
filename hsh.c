@@ -11,7 +11,7 @@ void hsh_loop(void)
     char **argv;
     char *cmd_path;
     pid_t pid;
-    int status; i;
+    int status, i;
 
     while (1)
     {
