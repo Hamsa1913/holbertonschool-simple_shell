@@ -6,93 +6,74 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 
 extern char **environ;
 
 /**
- * hsh_loop - Main shell loop, reads and executes commands
- *
- * Return: 0 on success
+ * hsh_loop - main shell loop
+ * Return: 0
  */
 int hsh_loop(void)
 {
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    char **argv;
-    pid_t pid;
+	char *line = NULL, *cmd_path = NULL;
+	size_t len = 0;
+	ssize_t read;
+	char **argv;
+	pid_t pid;
+	int interactive = isatty(STDIN_FILENO);
 
-    
-    while (1)
-    {
-        /* Print prompt */
-        write(STDOUT_FILENO, "$ ", 2);
+	while (1)
+	{
+		if (interactive)
+			write(STDOUT_FILENO, "$ ", 2);
 
-        /* Read input line */
-        read = getline(&line, &len, stdin);
-        if (read == -1)
-            break;
+		read = getline(&line, &len, stdin);
+		if (read == -1)
+			break;
 
-        /* Remove newline */
-        if (line[read - 1] == '\n')
-            line[read - 1] = '\0';
+		if (line[read - 1] == '\n')
+			line[read - 1] = '\0';
 
-        /* Skip empty lines */
-        if (line[0] == '\0')
-            continue;
+		if (*line == '\0')
+			continue;
 
-        /* Split line into arguments */
-        argv = split_line(line);
-        if (!argv)
-            continue;
+		argv = split_line(line);
+		if (!argv || !argv[0])
+		{
+			free_argv(argv);
+			continue;
+		}
 
-        /* Check for exit command */
-        if (strcmp(argv[0], "exit") == 0)
-        {
-            free_argv(argv);
-            break;
-        }
+		/* Resolve command BEFORE fork */
+		if (strchr(argv[0], '/'))
+			cmd_path = argv[0];
+		else
+			cmd_path = find_path(argv[0]);
 
-        /* Fork to execute command */
-        pid = fork();
-        if (pid == 0)
-        {
-            /* Child process */
-            if (access(argv[0], F_OK) != 0)
-            {
-                char *full_path = find_path(argv[0]);
-                if (!full_path)
-                {
-                    write(STDERR_FILENO, "execve: No such file or directory\n", 34);
-                    free_argv(argv);
-                    exit(EXIT_FAILURE);
-                }
-                execve(full_path, argv, environ);
-                free(full_path);
-            }
-            else
-            {
-                execve(argv[0], argv, environ);
-            }
+		if (!cmd_path)
+		{
+			write(STDERR_FILENO,
+			      "execve: No such file or directory\n", 34);
+			free_argv(argv);
+			continue;
+		}
 
-            perror("execve");
-            free_argv(argv);
-            exit(EXIT_FAILURE);
-        }
-        else if (pid > 0)
-        {
-            /* Parent waits for child */
-            wait(NULL);
-        }
-        else
-        {
-            perror("fork");
-        }
+		pid = fork();
+		if (pid == 0)
+		{
+			execve(cmd_path, argv, environ);
+			perror("execve");
+			exit(EXIT_FAILURE);
+		}
+		else
+			wait(NULL);
 
-        free_argv(argv);
-    }
+		if (cmd_path != argv[0])
+			free(cmd_path);
 
-    free(line);
-    return 0;
+		free_argv(argv);
+	}
+
+	free(line);
+	return (0);
 }

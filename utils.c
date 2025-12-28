@@ -67,13 +67,5 @@ char *trim_spaces(char *str)
 /* Free argv array */
 void free_argv(char **argv)
 {
-	size_t i;
-
-	if (!argv)
-		return;
-
-	for (i = 0; argv[i]; i++)
-		free(argv[i]);
 	free(argv);
 }
-
