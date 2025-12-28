@@ -14,7 +14,7 @@ extern char **environ;
 int hsh_loop(void);
 
 /* path functions */
-char *find_path(char *cmd);
+char *find_path(char *command);
 void trim_spaces(char *str);
 
 /* utility file functions becuse i cant used more than 5 functions */
