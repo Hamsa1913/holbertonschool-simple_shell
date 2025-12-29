@@ -1,58 +1,57 @@
 #include "simple_shell.h"
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+extern char **environ;
 
 /**
  * hsh_loop - main shell loop
- *
- * Return: 0 on success
+ * Return: 0
  */
 int hsh_loop(void)
 {
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
-	char **argv;
-	pid_t pid;
-	char *cmd_path;
+        char *line = NULL, *cmd_path = NULL;
+        size_t len = 0;
+        ssize_t read;
+        char **argv;
+        pid_t pid;
+        int interactive = isatty(STDIN_FILENO);
 
-	while (1)
-	{
-		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, ":) ", 3);
+        while (1)
+        {
+                if (interactive)
+                        write(STDOUT_FILENO, "$ ", 2);
 
-		read = getline(&line, &len, stdin);
-		if (read == -1)
-		{
-			free(line);
-			return (0);
-		}
+                read = getline(&line, &len, stdin);
+                if (read == -1)
+                        break;
 
-		trim_spaces(line);
-		if (line[0] == '\0')
-			continue;
+                if (line[read - 1] == '\n')
+                        line[read - 1] = '\0';
 
-		argv = split_line(line);
-		if (!argv || !argv[0])
-		{
-			free_argv(argv);
-			continue;
-		}
+                if (*line == '\0')
+                        continue;
 
-		/* Resolve command path */
-		if (strchr(argv[0], '/'))
-			cmd_path = argv[0];
-		else
-			cmd_path = find_path(argv[0]);
+                argv = split_line(line);
+                if (!argv || !argv[0])
+                {
+                        free_argv(argv);
+                        continue;
+                }
+                 /* Resolve command BEFORE fork */
+                if (strchr(argv[0], '/'))
+                        cmd_path = argv[0];
+                else
+                        cmd_path = find_path(argv[0]);
 
-		/* Command not found → NO fork */
-		if (cmd_path == NULL)
-		{
-			write(STDERR_FILENO, "./hsh: 1: ", 10);
+                if (!cmd_path)
+                {
+                        write(STDERR_FILENO, "./hsh: 1: ", 10);
 			write(STDERR_FILENO, argv[0], strlen(argv[0]));
 			write(STDERR_FILENO, ": not found\n", 13);
 
@@ -63,19 +62,18 @@ int hsh_loop(void)
 		pid = fork();
 		if (pid == 0)
 		{
-			if (execve(cmd_path, argv, environ) == -1)
-			{
-				perror("execve");
-				free_argv(argv);
-				exit(1);
-			}
+			execve(cmd_path, argv, environ);
+			exit(127);
 		}
-		else if (pid > 0)
-		{
+		else
 			wait(NULL);
-		}
+
+		if (cmd_path != argv[0])
+			free(cmd_path);
 
 		free_argv(argv);
 	}
-}
 
+	free(line);
+	return (0);
+}

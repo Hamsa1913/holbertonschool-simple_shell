@@ -2,56 +2,48 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdio.h>
-
-extern char **environ;
 
 /**
- * find_path - find command in PATH
- * @cmd: command
+ * find_path - finds command in PATH
+ * @cmd: command to find
+ *
  * Return: full path or NULL
  */
-char *find_path(const char *cmd)
+char *find_path(char *cmd)
 {
-	char *path, *path_copy, *token, *full;
-	int i;
-	size_t len;
+	char *path_env, *path_copy, *dir, *full_path;
+	struct stat st;
 
-	if (access(cmd, X_OK) == 0)
-		return (strdup(cmd));
-
-	for (i = 0; environ[i]; i++)
-	{
-		if (strncmp(environ[i], "PATH=", 5) == 0)
-		{
-			path = environ[i] + 5;
-			break;
-		}
-	}
-
-	if (!path)
+	path_env = _getenv("PATH");
+	if (!path_env || *path_env == '\0')
 		return (NULL);
 
-	path_copy = strdup(path);
-	token = strtok(path_copy, ":");
+	path_copy = strdup(path_env);
+	if (!path_copy)
+		return (NULL);
 
-	while (token)
+	dir = strtok(path_copy, ":");
+	while (dir)
 	{
-		len = strlen(token) + strlen(cmd) + 2;
-		full = malloc(len);
-		if (!full)
-			break;
-
-		snprintf(full, len, "%s/%s", token, cmd);
-
-		if (access(full, X_OK) == 0)
+		full_path = malloc(strlen(dir) + strlen(cmd) + 2);
+		if (!full_path)
 		{
 			free(path_copy);
-			return (full);
+			return (NULL);
 		}
 
-		free(full);
-		token = strtok(NULL, ":");
+		strcpy(full_path, dir);
+		strcat(full_path, "/");
+		strcat(full_path, cmd);
+
+		if (stat(full_path, &st) == 0 && (st.st_mode & S_IXUSR))
+		{
+			free(path_copy);
+			return (full_path);
+		}
+
+		free(full_path);
+		dir = strtok(NULL, ":");
 	}
 
 	free(path_copy);
