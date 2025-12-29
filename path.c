@@ -2,51 +2,58 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdio.h>
+
+extern char **environ;
 
 /**
- * find_path - finds command in PATH
- * @cmd: command to find
- *
+ * find_path - find command in PATH
+ * @cmd: command
  * Return: full path or NULL
  */
-char *find_path(char *cmd)
+char *find_path(const char *cmd)
 {
-	char *path_env, *path_copy, *dir, *full_path;
-	struct stat st;
+        char *path, *path_copy, *token, *full;
+        int i;
+        size_t len;
 
-	path_env = _getenv("PATH");
-	if (!path_env || *path_env == '\0')
-		return (NULL);
+        if (access(cmd, X_OK) == 0)
+                return (strdup(cmd));
 
-	path_copy = strdup(path_env);
-	if (!path_copy)
-		return (NULL);
+        for (i = 0; environ[i]; i++)
+        {
+                if (strncmp(environ[i], "PATH=", 5) == 0)
+                {
+                        path = environ[i] + 5;
+                        break;
+                }
+        }
 
-	dir = strtok(path_copy, ":");
-	while (dir)
-	{
-		full_path = malloc(strlen(dir) + strlen(cmd) + 2);
-		if (!full_path)
-		{
-			free(path_copy);
-			return (NULL);
-		}
+        if (!path)
+                return (NULL);
 
-		strcpy(full_path, dir);
-		strcat(full_path, "/");
-		strcat(full_path, cmd);
+        path_copy = strdup(path);
+        token = strtok(path_copy, ":");
 
-		if (stat(full_path, &st) == 0 && (st.st_mode & S_IXUSR))
-		{
-			free(path_copy);
-			return (full_path);
-		}
+        while (token)
+        {
+                len = strlen(token) + strlen(cmd) + 2;
+                full = malloc(len);
+                if (!full)
+                        break;
 
-		free(full_path);
-		dir = strtok(NULL, ":");
-	}
+                snprintf(full, len, "%s/%s", token, cmd);
 
-	free(path_copy);
-	return (NULL);
+                if (access(full, X_OK) == 0)
+                 {
+                        free(path_copy);
+                        return (full);
+                }
+
+                free(full);
+                token = strtok(NULL, ":");
+        }
+
+        free(path_copy);
+        return (NULL);
 }
-
