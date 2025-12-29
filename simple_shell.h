@@ -28,6 +28,5 @@ void free_argv(char **argv);
 
 /* PATH resolution */
 char *find_path(const char *command);
-char *_getenv(const char *name);
 #endif /* SIMPLE_SHELL_H */
 
