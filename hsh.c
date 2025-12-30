@@ -8,35 +8,42 @@
 int execute(char **args)
 {
     pid_t pid;
-    int status;
-    char *path_env, *dir, full_path[1024];
+    int status, i;
+    char *path_env = NULL, *dir, full_path[1024];
     int found = 0;
 
-    if (strchr(args[0], '/')) /* full path provided */
+    /* Find PATH from environ */
+    for (i = 0; environ[i]; i++)
+    {
+        if (strncmp(environ[i], "PATH=", 5) == 0)
+        {
+            path_env = environ[i] + 5;
+            break;
+        }
+    }
+
+    /* Check if full path provided */
+    if (strchr(args[0], '/'))
     {
         if (access(args[0], X_OK) != -1)
             found = 1;
     }
-    else
+    else if (path_env)
     {
-        path_env = getenv("PATH");
-        if (path_env)
+        char *path_dup = strdup(path_env);
+        dir = strtok(path_dup, ":");
+        while (dir)
         {
-            char *path_dup = strdup(path_env);
-            dir = strtok(path_dup, ":");
-            while (dir)
+            snprintf(full_path, sizeof(full_path), "%s/%s", dir, args[0]);
+            if (access(full_path, X_OK) == 0)
             {
-                snprintf(full_path, sizeof(full_path), "%s/%s", dir, args[0]);
-                if (access(full_path, X_OK) == 0)
-                {
-                    args[0] = full_path;
-                    found = 1;
-                    break;
-                }
-                dir = strtok(NULL, ":");
+                args[0] = full_path;
+                found = 1;
+                break;
             }
-            free(path_dup);
+            dir = strtok(NULL, ":");
         }
+        free(path_dup);
     }
 
     if (!found)
