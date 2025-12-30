@@ -4,11 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-/**
- * execute - Executes a command using fork and execve
- * @args: Command arguments
- * Return: status of child process
- */
 int execute(char **args)
 {
     pid_t pid;
@@ -19,8 +14,8 @@ int execute(char **args)
     {
         if (execve(args[0], args, environ) == -1)
         {
-            perror(args[0]); /* print error on stderr */
-            exit(2);         /* exit with status 2 if command fails */
+            perror(args[0]);
+            exit(127); /* command not found */
         }
         exit(0);
     }
