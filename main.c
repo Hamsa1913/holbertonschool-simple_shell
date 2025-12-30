@@ -15,7 +15,7 @@ int main(void)
     while (1)
     {
         if (isatty(STDIN_FILENO))
-            write(STDOUT_FILENO, "$ ", 2);
+            write(STDOUT_FILENO, ":) ", 3);
 
         if (getline(&line, &len, stdin) == -1)
             break;
