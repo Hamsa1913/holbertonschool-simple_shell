@@ -2,6 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 int main(void)
 {
@@ -9,6 +10,7 @@ int main(void)
     char **args;
     size_t len = 0;
     int status = 0;
+    int i;
 
     while (1)
     {
@@ -31,6 +33,14 @@ int main(void)
             free(args);
             free(line);
             exit(status);
+        }
+
+        if (strcmp(args[0], "env") == 0)
+        {
+            for (i = 0; environ[i]; i++)
+                printf("%s\n", environ[i]);
+            free(args);
+            continue;
         }
 
         status = execute(args);
