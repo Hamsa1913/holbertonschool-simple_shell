@@ -9,7 +9,7 @@ int main(void)
     char *line = NULL;
     char **args;
     size_t len = 0;
-    int status = 0;
+    int last_status = 0;
     int i;
 
     while (1)
@@ -32,7 +32,7 @@ int main(void)
         {
             free(args);
             free(line);
-            exit(status);
+            exit(last_status);
         }
 
         if (strcmp(args[0], "env") == 0)
@@ -43,10 +43,10 @@ int main(void)
             continue;
         }
 
-        status = execute(args);
+        last_status = execute(args);
         free(args);
     }
 
     free(line);
-    return (0);
+    return (last_status);
 }
