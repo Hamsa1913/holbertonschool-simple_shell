@@ -1,28 +1,25 @@
 #include "simple_shell.h"
-#include <stdlib.h>
-#include <string.h>
 
 /**
- * split_line - split input into tokens
- * @line: input
- * Return: argv
+ * split_line - Splits a line into arguments
+ * @line: Input line
+ * Return: Array of tokens
  */
 char **split_line(char *line)
 {
-	int bufsize = 64, i = 0;
-	char **tokens = malloc(sizeof(char *) * bufsize);
-	char *token;
+    char **tokens;
+    char *token;
+    int i = 0;
 
-	if (!tokens)
-		return (NULL);
+    tokens = malloc(sizeof(char *) * 1024);
+    token = strtok(line, " \t\n");
 
-	token = strtok(line, " \t\r\n");
-	while (token)
-	{
-		tokens[i++] = token;
-		token = strtok(NULL, " \t\r\n");
-	}
+    while (token)
+    {
+        tokens[i++] = token;
+        token = strtok(NULL, " \t\n");
+    }
+    tokens[i] = NULL;
 
-	tokens[i] = NULL;
-	return (tokens);
+    return (tokens);
 }
