@@ -9,6 +9,6 @@
 extern char **environ;
 
 char **split_line(char *line);
-void execute(char **args);
+int execute(char **args);
 
 #endif
