@@ -8,7 +8,7 @@
 int execute(char **args)
 {
     pid_t pid;
-    int status, i;
+    int status, i, cmd_num = 1;
     char *path_env = NULL, *dir, full_path[1024];
     int found = 0;
 
@@ -28,7 +28,7 @@ int execute(char **args)
         if (access(args[0], X_OK) != -1)
             found = 1;
     }
-    else if (path_env)
+    else if (path_env && path_env[0] != '\0')
     {
         char *path_dup = strdup(path_env);
         dir = strtok(path_dup, ":");
@@ -48,7 +48,7 @@ int execute(char **args)
 
     if (!found)
     {
-        fprintf(stderr, "%s: not found\n", args[0]);
+        fprintf(stderr, "./hsh: %d: %s: not found\n", cmd_num, args[0]);
         return 127;
     }
 
