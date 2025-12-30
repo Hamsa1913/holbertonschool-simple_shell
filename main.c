@@ -1,20 +1,17 @@
 #include "simple_shell.h"
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
-/**
- * main - Entry point for simple shell
- * Return: Always 0
- */
 int main(void)
 {
     char *line = NULL;
     char **args;
     size_t len = 0;
+    int status = 0;
 
     while (1)
     {
-        /* Print prompt only if input is from terminal */
         if (isatty(STDIN_FILENO))
             write(STDOUT_FILENO, "$ ", 2);
 
@@ -29,15 +26,14 @@ int main(void)
             continue;
         }
 
-        /* built-in exit */
         if (strcmp(args[0], "exit") == 0)
         {
             free(args);
             free(line);
-            exit(0);
+            exit(status);
         }
 
-        execute(args);
+        status = execute(args);
         free(args);
     }
 
