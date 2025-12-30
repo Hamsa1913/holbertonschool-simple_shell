@@ -1,6 +1,11 @@
 #include "simple_shell.h"
 #include <string.h>
+#include <unistd.h>
 
+/**
+ * main - Entry point for simple shell
+ * Return: Always 0
+ */
 int main(void)
 {
     char *line = NULL;
@@ -9,7 +14,9 @@ int main(void)
 
     while (1)
     {
-        write(STDOUT_FILENO, "$ ", 2);
+        /* Print prompt only if input is from terminal */
+        if (isatty(STDIN_FILENO))
+            write(STDOUT_FILENO, "$ ", 2);
 
         if (getline(&line, &len, stdin) == -1)
             break;
