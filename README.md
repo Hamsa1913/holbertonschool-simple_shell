@@ -1,5 +1,5 @@
 # C - Simple Shell 
-
+.
 The Goal - Building a simple shell that listens, understands and run commands.
 
 ## About GitHub:
